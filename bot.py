@@ -144,6 +144,158 @@ async def business_bot(callback: CallbackQuery):
     )
 
     await callback.answer()
+@dp.callback_query(F.data == "card_bot")
+async def card_bot(callback: CallbackQuery):
+
+    order_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="request")],
+            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
+        ]
+    )
+
+    await callback.message.answer(
+        "━━━━━━━━━━━━━━━\n"
+        "🔹 БОТ-ВИЗИТКА\n\n"
+
+        "💰 Стоимость\n"
+        "от 20 000 ₸\n\n"
+
+        "🔄 Поддержка\n"
+        "5 000 ₸ / месяц\n\n"
+
+        "🎯 Подходит для\n"
+        "• Мастеров\n"
+        "• Услуг\n"
+        "• Небольших компаний\n\n"
+
+        "📦 Что входит\n\n"
+
+        "✅ Красивое меню\n"
+        "✅ Контакты\n"
+        "✅ FAQ\n"
+        "✅ Сбор заявок\n"
+        "✅ CRM Google Sheets\n"
+        "✅ Работа 24/7\n\n"
+
+        "⏳ Срок разработки\n"
+        "1–3 дня\n"
+        "━━━━━━━━━━━━━━━",
+
+        reply_markup=order_keyboard
+    )
+
+    await callback.answer()
+@dp.callback_query(F.data == "shop_bot")
+async def shop_bot(callback: CallbackQuery):
+
+    order_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="request")],
+            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
+        ]
+    )
+
+    await callback.message.answer(
+        "━━━━━━━━━━━━━━━\n"
+        "🛍 МАГАЗИН-БОТ\n\n"
+
+        "💰 Стоимость\n"
+        "от 120 000 ₸\n\n"
+
+        "🔄 Поддержка\n"
+        "20 000 ₸ / месяц\n\n"
+
+        "📦 Что входит\n\n"
+
+        "✅ Каталог товаров\n"
+        "✅ Фото товаров\n"
+        "✅ Категории\n"
+        "✅ Корзина\n"
+        "✅ Заказы\n"
+        "✅ CRM клиентов\n"
+        "✅ Админ-панель\n"
+        "✅ Работа 24/7\n\n"
+
+        "⏳ Срок разработки\n"
+        "7–14 дней\n"
+        "━━━━━━━━━━━━━━━",
+
+        reply_markup=order_keyboard
+    )
+
+    await callback.answer()
+@dp.callback_query(F.data == "ai_bot")
+async def ai_bot(callback: CallbackQuery):
+
+    order_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="request")],
+            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
+        ]
+    )
+
+    await callback.message.answer(
+        "━━━━━━━━━━━━━━━\n"
+        "🤖 AI / CHATGPT БОТ\n\n"
+
+        "💰 Стоимость\n"
+        "от 150 000 ₸\n\n"
+
+        "🔄 Поддержка\n"
+        "30 000 ₸ / месяц\n\n"
+
+        "📦 Что входит\n\n"
+
+        "✅ AI-консультант\n"
+        "✅ ChatGPT интеграция\n"
+        "✅ Ответы клиентам 24/7\n"
+        "✅ Автоматизация продаж\n"
+        "✅ CRM интеграции\n"
+        "✅ Индивидуальное обучение\n\n"
+
+        "⏳ Срок разработки\n"
+        "7–14 дней\n"
+        "━━━━━━━━━━━━━━━",
+
+        reply_markup=order_keyboard
+    )
+
+    await callback.answer()
+@dp.callback_query(F.data == "custom_bot")
+async def custom_bot(callback: CallbackQuery):
+
+    order_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="request")],
+            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
+        ]
+    )
+
+    await callback.message.answer(
+        "━━━━━━━━━━━━━━━\n"
+        "⚙ ИНДИВИДУАЛЬНАЯ РАЗРАБОТКА\n\n"
+
+        "💰 Стоимость\n"
+        "от 200 000 ₸\n\n"
+
+        "📦 Возможности\n\n"
+
+        "✅ Telegram Mini App\n"
+        "✅ Онлайн-оплата\n"
+        "✅ CRM интеграции\n"
+        "✅ Автоматизация бизнеса\n"
+        "✅ Складской учёт\n"
+        "✅ Любой функционал\n\n"
+
+        "⏳ Срок разработки\n"
+        "Индивидуально\n"
+        "━━━━━━━━━━━━━━━",
+
+        reply_markup=order_keyboard
+    )
+
+    await callback.answer()
 @dp.callback_query(F.data == "order_business")
 async def order_business(callback: CallbackQuery, state: FSMContext):
 
