@@ -40,7 +40,7 @@ sheet = client.open("CRM Заявки").sheet1
 class RequestForm(StatesGroup):
     name = State()
     phone = State()
-    service = State()
+    comment = State()
 
 
 keyboard = InlineKeyboardMarkup(
@@ -100,13 +100,16 @@ async def catalog(callback: CallbackQuery):
         reply_markup=catalog_keyboard
     )
 
-    await callback.answer()
+    await callback.message.answer(
+    "Выберите действие:",
+    reply_markup=order_keyboard
+)
 @dp.callback_query(F.data == "business_bot")
 async def business_bot(callback: CallbackQuery):
 
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="request")],
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_business")],
             [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
         ]
     )
@@ -144,6 +147,20 @@ async def business_bot(callback: CallbackQuery):
     )
 
     await callback.answer()
+    @dp.callback_query(F.data == "order_business")
+async def order_business(callback: CallbackQuery, state: FSMContext):
+
+    await state.update_data(
+        tariff="Бизнес-бот"
+    )
+
+    await state.set_state(RequestForm.name)
+
+    await callback.message.answer(
+        "👤 Введите ваше имя:"
+    )
+
+    await callback.answer()
 @dp.callback_query(F.data == "portfolio")
 async def portfolio(callback: CallbackQuery):
 
@@ -176,6 +193,32 @@ async def contacts(callback: CallbackQuery):
     await callback.message.answer(
         "📞 Связь с менеджером:",
         reply_markup=contact_keyboard
+    )
+
+    await callback.answer()
+    @dp.callback_query(F.data == "order_business")
+async def order_business(callback: CallbackQuery, state: FSMContext):
+
+    await state.update_data(
+        tariff="Бизнес-бот"
+    )
+
+    await state.set_state(RequestForm.name)
+
+    await callback.message.answer(
+        "👤 Введите ваше имя:"
+    )
+
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "request")
+async def request_start(callback: CallbackQuery, state: FSMContext):
+
+    await state.set_state(RequestForm.name)
+
+    await callback.message.answer(
+        "👤 Введите ваше имя:"
     )
 
     await callback.answer()
