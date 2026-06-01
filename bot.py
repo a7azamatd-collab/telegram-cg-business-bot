@@ -144,9 +144,10 @@ async def business_bot(callback: CallbackQuery):
     )
 
     await callback.answer()
-    @dp.callback_query(F.data == "order_business")
-    async def order_business(callback: CallbackQuery, state: FSMContext):
-        await state.update_data(
+@dp.callback_query(F.data == "order_business")
+async def order_business(callback: CallbackQuery, state: FSMContext):
+
+    await state.update_data(
         tariff="Бизнес-бот"
     )
 
