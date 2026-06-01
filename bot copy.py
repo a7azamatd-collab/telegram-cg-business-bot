@@ -45,11 +45,16 @@ class RequestForm(StatesGroup):
 
 keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-   
         [
             InlineKeyboardButton(
-                text="💼 Каталог решений",
-                callback_data="catalog"
+                text="📋 Услуги",
+                callback_data="services"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="💰 Цены",
+                callback_data="prices"
             )
         ],
         [
@@ -81,69 +86,40 @@ async def start(message: Message):
         "Выберите нужный раздел:",
         reply_markup=keyboard
     )
-@dp.callback_query(F.data == "catalog")
-async def catalog(callback: CallbackQuery):
-
-    catalog_keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="🔹 Бот-визитка", callback_data="card_bot")],
-            [InlineKeyboardButton(text="🔹 Бизнес-бот", callback_data="business_bot")],
-            [InlineKeyboardButton(text="🔹 Магазин-бот", callback_data="shop_bot")],
-            [InlineKeyboardButton(text="🤖 AI / ChatGPT бот", callback_data="ai_bot")],
-            [InlineKeyboardButton(text="⚙ Индивидуальная разработка", callback_data="custom_bot")]
-        ]
-    )
-
+@dp.callback_query(F.data == "services")
+async def services(callback: CallbackQuery):
     await callback.message.answer(
-        "💼 Каталог решений\n\n"
-        "Выберите интересующий вариант:",
-        reply_markup=catalog_keyboard
+        "🔹 Создание Telegram-ботов\n"
+        "🔹 Боты для бизнеса\n"
+        "🔹 Автоматизация заявок"
     )
 
     await callback.answer()
-    @dp.callback_query(F.data == "business_bot")
-async def business_bot(callback: CallbackQuery):
 
-    order_keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="request")],
-            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
-        ]
-    )
 
+@dp.callback_query(F.data == "prices")
+async def prices(callback: CallbackQuery):
     await callback.message.answer(
-        "━━━━━━━━━━━━━━━\n"
-        "🔹 БИЗНЕС-БОТ\n\n"
+        "💰 Цены на услуги\n\n"
 
-        "💰 Стоимость\n"
-        "от 50 000 ₸\n\n"
+        "🔹 Базовый бот — от 20 000 ₸\n"
+        "• Меню с кнопками\n"
+        "• Сбор заявок\n"
+        "• Контакты и FAQ\n\n"
 
-        "🔄 Поддержка\n"
-        "10 000 ₸ / месяц\n\n"
+        "🔹 Бизнес бот — от 50 000 ₸\n"
+        "• Каталог товаров\n"
+        "• Запись клиентов\n"
+        "• Фото и карточки товаров\n"
+        "• Уведомления администратору\n\n"
 
-        "🎯 Подходит для\n"
-        "• Салонов красоты\n"
-        "• Автосервисов\n"
-        "• Мебельных компаний\n"
-        "• Доставки\n\n"
-
-        "📦 Что входит\n\n"
-
-        "✅ Каталог услуг\n"
-        "✅ Фото и карточки\n"
-        "✅ CRM клиентов\n"
-        "✅ Уведомления админу\n"
-        "✅ Рассылки\n"
-        "✅ Работа 24/7\n\n"
-
-        "⏳ Срок разработки\n"
-        "3–7 дней\n"
-        "━━━━━━━━━━━━━━━",
-
-        reply_markup=order_keyboard
+        "🔹 Продвинутый бот — от 100 000 ₸\n"
+        "• AI / ChatGPT функции\n"
+        "• CRM интеграции\n"
+        "• Автоматизация бизнеса\n"
+        "• Индивидуальный функционал"
     )
-
-    await callback.answer()
+    
 @dp.callback_query(F.data == "portfolio")
 async def portfolio(callback: CallbackQuery):
 
