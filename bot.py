@@ -100,8 +100,9 @@ async def catalog(callback: CallbackQuery):
         reply_markup=catalog_keyboard
     )
 
-    await callback.answer()
-    @dp.callback_query(F.data == "business_bot")
+   await callback.answer()
+
+@dp.callback_query(F.data == "business_bot")
 async def business_bot(callback: CallbackQuery):
 
     order_keyboard = InlineKeyboardMarkup(
