@@ -40,7 +40,7 @@ sheet = client.open("CRM Заявки").sheet1
 class RequestForm(StatesGroup):
     name = State()
     phone = State()
-    comment = State()
+    service = State()
 
 
 keyboard = InlineKeyboardMarkup(
@@ -100,10 +100,7 @@ async def catalog(callback: CallbackQuery):
         reply_markup=catalog_keyboard
     )
 
-    await callback.message.answer(
-    "Выберите действие:",
-    reply_markup=order_keyboard
-)
+    await callback.answer()
 @dp.callback_query(F.data == "business_bot")
 async def business_bot(callback: CallbackQuery):
 
@@ -196,22 +193,7 @@ async def contacts(callback: CallbackQuery):
     )
 
     await callback.answer()
-    @dp.callback_query(F.data == "order_business")
-async def order_business(callback: CallbackQuery, state: FSMContext):
-
-    await state.update_data(
-        tariff="Бизнес-бот"
-    )
-
-    await state.set_state(RequestForm.name)
-
-    await callback.message.answer(
-        "👤 Введите ваше имя:"
-    )
-
-    await callback.answer()
-
-
+   
 @dp.callback_query(F.data == "request")
 async def request_start(callback: CallbackQuery, state: FSMContext):
 
@@ -223,16 +205,7 @@ async def request_start(callback: CallbackQuery, state: FSMContext):
 
     await callback.answer()
 
-@dp.callback_query(F.data == "request")
-async def request_start(callback: CallbackQuery, state: FSMContext):
 
-    await state.set_state(RequestForm.name)
-
-    await callback.message.answer(
-        "👤 Введите ваше имя:"
-    )
-
-    await callback.answer()
 @dp.message(RequestForm.name)
 async def get_name(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
