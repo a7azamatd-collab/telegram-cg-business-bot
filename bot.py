@@ -40,8 +40,7 @@ sheet = client.open("CRM Заявки").sheet1
 class RequestForm(StatesGroup):
     name = State()
     phone = State()
-    service = State()
-
+    comment = State()
 
 keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -390,32 +389,34 @@ async def get_phone(message: Message, state: FSMContext):
 
     await state.update_data(phone=phone)
 
-    await state.set_state(RequestForm.service)
+    await state.set_state(RequestForm.comment)
 
     await message.answer(
         "🛠 Опишите что вас интересует:"
     )
 
 
-@dp.message(RequestForm.service)
-async def get_service(message: Message, state: FSMContext):
-    await state.update_data(service=message.text)
+@dp.message(RequestForm.comment)
+async def get_comment(message: Message, state: FSMContext):
+    await state.update_data(comment=message.text)
 
     data = await state.get_data()
 
     text = (
-        f"📥 Новая заявка\n\n"
-        f"👤 Имя: {data['name']}\n"
-        f"📱 Телефон: {data['phone']}\n"
-        f"🛠 Услуга: {data['service']}"
-    )
+    f"📥 Новая заявка\n\n"
+    f"👤 Имя: {data['name']}\n"
+    f"📱 Телефон: {data['phone']}\n"
+    f"💼 Тариф: {data.get('tariff', 'Не выбран')}\n"
+    f"📝 Комментарий: {data['comment']}"
+)
 
     await bot.send_message(ADMIN_ID, text)
 
     sheet.append_row([
     data['name'],
     data['phone'],
-    data['service']
+    data.get('tariff', 'Не выбран'),
+    data['comment']
 ])
 
     await message.answer(
