@@ -148,7 +148,7 @@ async def card_bot(callback: CallbackQuery):
 
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="request")],
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_card")],
             [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
         ]
     )
