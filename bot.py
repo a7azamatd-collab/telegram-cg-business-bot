@@ -190,7 +190,7 @@ async def shop_bot(callback: CallbackQuery):
 
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_card")],
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_shop")],
             [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
         ]
     )
@@ -229,7 +229,7 @@ async def ai_bot(callback: CallbackQuery):
 
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_shop")],
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_ai")],
             [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
         ]
     )
@@ -266,7 +266,7 @@ async def custom_bot(callback: CallbackQuery):
 
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_ai")],
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_custom")],
             [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
         ]
     )
