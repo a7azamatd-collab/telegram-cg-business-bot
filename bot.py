@@ -190,7 +190,7 @@ async def shop_bot(callback: CallbackQuery):
 
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="request")],
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_card")],
             [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
         ]
     )
@@ -229,7 +229,7 @@ async def ai_bot(callback: CallbackQuery):
 
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="request")],
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_shop")],
             [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
         ]
     )
@@ -266,7 +266,7 @@ async def custom_bot(callback: CallbackQuery):
 
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="request")],
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_ai")],
             [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
         ]
     )
@@ -300,6 +300,68 @@ async def order_business(callback: CallbackQuery, state: FSMContext):
 
     await state.update_data(
         tariff="Бизнес-бот"
+    )
+
+    await state.set_state(RequestForm.name)
+
+    await callback.message.answer(
+        "👤 Введите ваше имя:"
+    )
+
+    await callback.answer()
+@dp.callback_query(F.data == "order_card")
+async def order_card(callback: CallbackQuery, state: FSMContext):
+
+    await state.update_data(
+        tariff="Бот-визитка"
+    )
+
+    await state.set_state(RequestForm.name)
+
+    await callback.message.answer(
+        "👤 Введите ваше имя:"
+    )
+
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "order_shop")
+async def order_shop(callback: CallbackQuery, state: FSMContext):
+
+    await state.update_data(
+        tariff="Магазин-бот"
+    )
+
+    await state.set_state(RequestForm.name)
+
+    await callback.message.answer(
+        "👤 Введите ваше имя:"
+    )
+
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "order_ai")
+async def order_ai(callback: CallbackQuery, state: FSMContext):
+
+    await state.update_data(
+        tariff="AI / ChatGPT бот"
+    )
+
+    await state.set_state(RequestForm.name)
+
+    await callback.message.answer(
+        "👤 Введите ваше имя:"
+    )
+
+    await callback.answer()
+
+
+@dp.callback_query(F.data == "order_custom")
+async def order_custom(callback: CallbackQuery, state: FSMContext):
+
+    await state.update_data(
+        tariff="Индивидуальная разработка"
     )
 
     await state.set_state(RequestForm.name)
