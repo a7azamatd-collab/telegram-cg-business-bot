@@ -27,6 +27,8 @@ client_ai = AsyncOpenAI(
     api_key=OPENAI_API_KEY
 )
 
+user_history = {}
+
 ADMIN_ID = 490936540
 
 bot = Bot(token=TOKEN)
@@ -582,48 +584,52 @@ async def ai_consultant(callback: CallbackQuery, state: FSMContext):
 @dp.message(AIChat.chat)
 async def ai_chat(message: Message):
 
+    user_id = message.from_user.id
+
+    if user_id not in user_history:
+        user_history[user_id] = []
+
     try:
 
-        response = await client_ai.chat.completions.create(
-            model="gpt-5.5",
-            messages=[
-                {
-                    "role": "system",
-                    "content": """
+        user_history[user_id].append({
+            "role": "user",
+            "content": message.text
+        })
+
+        messages = [
+            {
+                "role": "system",
+                "content": """
 Ты опытный менеджер компании CG Smart Bots.
 
 Твоя задача:
+- консультировать клиентов
+- продавать Telegram-ботов
+- выявлять потребности
+- предлагать решения
+- подводить клиента к заявке
 
-- консультировать клиентов по Telegram-ботам
-- выяснять потребности
-- предлагать подходящий тариф
-- рассказывать о сроках и возможностях
-- общаться дружелюбно и профессионально
-
-Доступные решения:
-
-1. Бот-визитка
-2. Бизнес-бот
-3. Магазин-бот
-4. AI / ChatGPT бот
-5. Индивидуальная разработка
-
-Если клиент готов заказать —
-предложи оставить заявку через кнопку
-«📝 Оставить заявку».
+Всегда отвечай на русском языке.
 """
-                },
-                {
-                    "role": "user",
-                    "content": message.text
-                }
-            ],
+            }
+        ]
+
+        messages.extend(user_history[user_id][-10:])
+
+        response = await client_ai.chat.completions.create(
+            model="gpt-5.5",
+            messages=messages,
             max_completion_tokens=500
         )
 
-        await message.answer(
-            response.choices[0].message.content
-        )
+        answer_text = response.choices[0].message.content
+
+        user_history[user_id].append({
+            "role": "assistant",
+            "content": answer_text
+        })
+
+        await message.answer(answer_text)
 
     except Exception as e:
 
