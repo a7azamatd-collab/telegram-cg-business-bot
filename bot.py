@@ -104,6 +104,8 @@ async def catalog(callback: CallbackQuery):
 @dp.callback_query(F.data == "business_bot")
 async def business_bot(callback: CallbackQuery):
 
+    photo = FSInputFile("tarif/business.png")
+
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_business")],
@@ -111,7 +113,9 @@ async def business_bot(callback: CallbackQuery):
         ]
     )
 
-    await callback.message.answer(
+    await callback.message.answer_photo(
+    photo=photo,
+    caption=
         "━━━━━━━━━━━━━━━\n"
         "🔹 БИЗНЕС-БОТ\n\n"
 
@@ -147,6 +151,8 @@ async def business_bot(callback: CallbackQuery):
 @dp.callback_query(F.data == "card_bot")
 async def card_bot(callback: CallbackQuery):
 
+    photo = FSInputFile("tarif/visitka.png")
+
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_card")],
@@ -154,7 +160,9 @@ async def card_bot(callback: CallbackQuery):
         ]
     )
 
-    await callback.message.answer(
+    await callback.message.answer_photo(
+    photo=photo,
+    caption=
         "━━━━━━━━━━━━━━━\n"
         "🔹 БОТ-ВИЗИТКА\n\n"
 
@@ -189,6 +197,8 @@ async def card_bot(callback: CallbackQuery):
 @dp.callback_query(F.data == "shop_bot")
 async def shop_bot(callback: CallbackQuery):
 
+    photo = FSInputFile("tarif/shop.png")
+
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_shop")],
@@ -196,7 +206,9 @@ async def shop_bot(callback: CallbackQuery):
         ]
     )
 
-    await callback.message.answer(
+    await callback.message.answer_photo(
+    photo=photo,
+    caption=
         "━━━━━━━━━━━━━━━\n"
         "🛍 МАГАЗИН-БОТ\n\n"
 
@@ -228,6 +240,8 @@ async def shop_bot(callback: CallbackQuery):
 @dp.callback_query(F.data == "ai_bot")
 async def ai_bot(callback: CallbackQuery):
 
+    photo = FSInputFile("tarif/ai.png")
+
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_ai")],
@@ -235,7 +249,9 @@ async def ai_bot(callback: CallbackQuery):
         ]
     )
 
-    await callback.message.answer(
+    await callback.message.answer_photo(
+    photo=photo,
+    caption=
         "━━━━━━━━━━━━━━━\n"
         "🤖 AI / CHATGPT БОТ\n\n"
 
@@ -265,6 +281,8 @@ async def ai_bot(callback: CallbackQuery):
 @dp.callback_query(F.data == "custom_bot")
 async def custom_bot(callback: CallbackQuery):
 
+    photo = FSInputFile("tarif/custom.png")
+
     order_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_custom")],
@@ -272,7 +290,9 @@ async def custom_bot(callback: CallbackQuery):
         ]
     )
 
-    await callback.message.answer(
+    await callback.message.answer_photo(
+    photo=photo,
+    caption=
         "━━━━━━━━━━━━━━━\n"
         "⚙ ИНДИВИДУАЛЬНАЯ РАЗРАБОТКА\n\n"
 
