@@ -462,6 +462,7 @@ async def get_phone(message: Message, state: FSMContext):
         "🛠 Опишите что вас интересует:"
     )
 
+
 @dp.message(RequestForm.comment)
 async def get_comment(message: Message, state: FSMContext):
     await state.update_data(comment=message.text)
