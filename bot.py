@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 from aiogram import Bot, Dispatcher, F
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.types import (
     Message,
     ReplyKeyboardMarkup,
@@ -518,11 +518,36 @@ async def get_comment(message: Message, state: FSMContext):
 
     await state.clear()
 
-@dp.message(F.text == "/id")
-async def my_id(message: Message):
-    await message.answer(
-        f"Ваш ID: {message.from_user.id}"
-    )
+@dp.message(Command("leads"))
+async def leads(message: Message):
+
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    records = sheet.get_all_values()
+
+    if len(records) <= 1:
+        await message.answer("Заявок пока нет.")
+        return
+
+    text = "📋 Последние заявки\n\n"
+
+    last_records = records[-10:]
+
+    for row in reversed(last_records):
+
+        if len(row) < 5:
+            continue
+
+        text += (
+            f"🕒 {row[0]}\n"
+            f"👤 {row[1]}\n"
+            f"📱 {row[2]}\n"
+            f"💼 {row[3]}\n\n"
+            f"─────────────────\n\n"
+        )
+
+    await message.answer(text)
 
 async def main():
     await dp.start_polling(bot)
