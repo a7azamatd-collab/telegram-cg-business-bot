@@ -518,52 +518,10 @@ async def get_comment(message: Message, state: FSMContext):
 
     await state.clear()
 
-@dp.message(F.text == "/stat")
-async def stat(message: Message):
-
-    if message.from_user.id != ADMIN_ID:
-        return
-
-    records = sheet.get_all_values()
-
-    total = len(records) - 1
-
-    visitka = 0
-    business = 0
-    shop = 0
-    ai = 0
-    custom = 0
-
-    for row in records[1:]:
-
-        if len(row) < 4:
-            continue
-
-        tariff = row[3]
-
-        if tariff == "Бот-визитка":
-            visitka += 1
-
-        elif tariff == "Бизнес-бот":
-            business += 1
-
-        elif tariff == "Магазин-бот":
-            shop += 1
-
-        elif tariff == "AI / ChatGPT бот":
-            ai += 1
-
-        elif tariff == "Индивидуальная разработка":
-            custom += 1
-
+@dp.message(F.text == "/id")
+async def my_id(message: Message):
     await message.answer(
-        f"📊 Статистика заявок\n\n"
-        f"Всего заявок: {total}\n\n"
-        f"🔹 Бот-визитка: {visitka}\n"
-        f"🔹 Бизнес-бот: {business}\n"
-        f"🛍 Магазин-бот: {shop}\n"
-        f"🤖 AI / ChatGPT бот: {ai}\n"
-        f"⚙ Индивидуальная разработка: {custom}"
+        f"Ваш ID: {message.from_user.id}"
     )
 
 async def main():
