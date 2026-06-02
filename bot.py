@@ -440,15 +440,19 @@ async def get_name(message: Message, state: FSMContext):
     )
 
     await message.answer(
-        "📱 Нажмите кнопку ниже чтобы отправить номер:",
-        reply_markup=contact_keyboard
-    )
+    "📱 Отправьте номер кнопкой ниже.\n\n"
+    "Если вы используете Telegram на ПК, просто введите номер вручную.",
+    reply_markup=contact_keyboard
+)
 
 
 @dp.message(RequestForm.phone)
 async def get_phone(message: Message, state: FSMContext):
 
-    phone = message.contact.phone_number
+    if message.contact:
+        phone = message.contact.phone_number
+    else:
+        phone = message.text
 
     await state.update_data(phone=phone)
 
@@ -457,7 +461,6 @@ async def get_phone(message: Message, state: FSMContext):
     await message.answer(
         "🛠 Опишите что вас интересует:"
     )
-
 
 @dp.message(RequestForm.comment)
 async def get_comment(message: Message, state: FSMContext):
