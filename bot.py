@@ -1,4 +1,5 @@
 import asyncio
+import os
 from datetime import datetime
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart, Command
@@ -17,7 +18,7 @@ from aiogram.fsm.context import FSMContext
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-TOKEN = "8813038337:AAFJFQmFxyjBX_W_gaetx-WVr7xRk6SnHv0"
+TOKEN = os.getenv("BOT_TOKEN")
 
 ADMIN_ID = 490936540
 
@@ -120,10 +121,10 @@ async def business_bot(callback: CallbackQuery):
         "🔹 БИЗНЕС-БОТ\n\n"
 
         "💰 Стоимость\n"
-        "от 70 000 ₸\n\n"
+        "от 150 000 ₸\n\n"
 
         "🔄 Поддержка\n"
-        "50 000 ₸ / месяц\n\n"
+        "70 000 ₸ / месяц\n\n"
 
         "🎯 Подходит для\n"
         "• Салонов красоты\n"
@@ -141,7 +142,7 @@ async def business_bot(callback: CallbackQuery):
         "✅ Работа 24/7\n\n"
 
         "⏳ Срок разработки\n"
-        "3–7 дней\n"
+        "7–10 дней\n"
         "━━━━━━━━━━━━━━━",
 
         reply_markup=order_keyboard
@@ -167,10 +168,10 @@ async def card_bot(callback: CallbackQuery):
         "🔹 БОТ-ВИЗИТКА\n\n"
 
         "💰 Стоимость\n"
-        "от 50 000 ₸\n\n"
+        "от 70 000 ₸\n\n"
 
         "🔄 Поддержка\n"
-        "30 000 ₸ / месяц\n\n"
+        "40 000 ₸ / месяц\n\n"
 
         "🎯 Подходит для\n"
         "• Мастеров\n"
@@ -187,7 +188,7 @@ async def card_bot(callback: CallbackQuery):
         "✅ Работа 24/7\n\n"
 
         "⏳ Срок разработки\n"
-        "1–3 дня\n"
+        "3–7 дня\n"
         "━━━━━━━━━━━━━━━",
 
         reply_markup=order_keyboard
@@ -213,10 +214,10 @@ async def shop_bot(callback: CallbackQuery):
         "🛍 МАГАЗИН-БОТ\n\n"
 
         "💰 Стоимость\n"
-        "от 120 000 ₸\n\n"
+        "от 150 000 ₸\n\n"
 
         "🔄 Поддержка\n"
-        "70 000 ₸ / месяц\n\n"
+        "90 000 ₸ / месяц\n\n"
 
         "📦 Что входит\n\n"
 
@@ -230,7 +231,7 @@ async def shop_bot(callback: CallbackQuery):
         "✅ Работа 24/7\n\n"
 
         "⏳ Срок разработки\n"
-        "7–14 дней\n"
+        "7–20 дней\n"
         "━━━━━━━━━━━━━━━",
 
         reply_markup=order_keyboard
@@ -256,10 +257,10 @@ async def ai_bot(callback: CallbackQuery):
         "🤖 AI / CHATGPT БОТ\n\n"
 
         "💰 Стоимость\n"
-        "от 150 000 ₸\n\n"
+        "от 300 000 ₸\n\n"
 
         "🔄 Поддержка\n"
-        "100 000 ₸ / месяц\n\n"
+        "150 000 ₸ / месяц\n\n"
 
         "📦 Что входит\n\n"
 
@@ -271,7 +272,7 @@ async def ai_bot(callback: CallbackQuery):
         "✅ Индивидуальное обучение\n\n"
 
         "⏳ Срок разработки\n"
-        "7–14 дней\n"
+        "7–20 дней\n"
         "━━━━━━━━━━━━━━━",
 
         reply_markup=order_keyboard
@@ -297,7 +298,7 @@ async def custom_bot(callback: CallbackQuery):
         "⚙ ИНДИВИДУАЛЬНАЯ РАЗРАБОТКА\n\n"
 
         "💰 Стоимость\n"
-        "от 200 000 ₸\n\n"
+        "от 500 000 ₸\n\n"
 
         "📦 Возможности\n\n"
 
