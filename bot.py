@@ -1,5 +1,6 @@
 import asyncio
 import os
+from openai import AsyncOpenAI
 from datetime import datetime
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart, Command
@@ -19,6 +20,12 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 TOKEN = os.getenv("BOT_TOKEN")
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+client_ai = AsyncOpenAI(
+    api_key=OPENAI_API_KEY
+)
 
 ADMIN_ID = 490936540
 
@@ -69,6 +76,12 @@ keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 text="📝 Оставить заявку",
                 callback_data="request"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="🤖 AI Консультант",
+                callback_data="ai_consultant"
             )
         ]
     ]
@@ -549,6 +562,17 @@ async def leads(message: Message):
         )
 
     await message.answer(text)
+@dp.callback_query(F.data == "ai_consultant")
+async def ai_consultant(callback: CallbackQuery):
+
+    await callback.message.answer(
+        "🤖 AI Консультант\n\n"
+        "Здравствуйте!\n\n"
+        "Я помогу подобрать Telegram-бота для вашего бизнеса.\n\n"
+        "Напишите, какой бот вас интересует или какую задачу нужно решить."
+    )
+
+    await callback.answer()
 
 async def main():
     await dp.start_polling(bot)
