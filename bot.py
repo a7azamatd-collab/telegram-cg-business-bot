@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import (
@@ -464,8 +465,11 @@ async def get_comment(message: Message, state: FSMContext):
 
     data = await state.get_data()
 
+    current_time = datetime.now().strftime("%d.%m.%Y %H:%M")
+
     text = (
     f"📥 Новая заявка\n\n"
+    f"🕒 Дата: {current_time}\n"
     f"👤 Имя: {data['name']}\n"
     f"📱 Телефон: {data['phone']}\n"
     f"💼 Тариф: {data.get('tariff', 'Не выбран')}\n"
@@ -475,6 +479,7 @@ async def get_comment(message: Message, state: FSMContext):
     await bot.send_message(ADMIN_ID, text)
 
     sheet.append_row([
+    current_time,
     data['name'],
     data['phone'],
     data.get('tariff', 'Не выбран'),
