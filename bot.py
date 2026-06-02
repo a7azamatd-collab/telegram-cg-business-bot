@@ -51,6 +51,9 @@ class RequestForm(StatesGroup):
     phone = State()
     comment = State()
 
+class AIChat(StatesGroup):
+    chat = State()
+
 keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
    
@@ -563,16 +566,70 @@ async def leads(message: Message):
 
     await message.answer(text)
 @dp.callback_query(F.data == "ai_consultant")
-async def ai_consultant(callback: CallbackQuery):
+async def ai_consultant(callback: CallbackQuery, state: FSMContext):
+
+    await state.set_state(AIChat.chat)
 
     await callback.message.answer(
         "🤖 AI Консультант\n\n"
         "Здравствуйте!\n\n"
         "Я помогу подобрать Telegram-бота для вашего бизнеса.\n\n"
-        "Напишите, какой бот вас интересует или какую задачу нужно решить."
+        "Опишите задачу."
     )
 
     await callback.answer()
+
+@dp.message(AIChat.chat)
+async def ai_chat(message: Message):
+
+    try:
+
+        response = await client_ai.chat.completions.create(
+            model="gpt-5.5",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """
+Ты опытный менеджер компании CG Smart Bots.
+
+Твоя задача:
+
+- консультировать клиентов по Telegram-ботам
+- выяснять потребности
+- предлагать подходящий тариф
+- рассказывать о сроках и возможностях
+- общаться дружелюбно и профессионально
+
+Доступные решения:
+
+1. Бот-визитка
+2. Бизнес-бот
+3. Магазин-бот
+4. AI / ChatGPT бот
+5. Индивидуальная разработка
+
+Если клиент готов заказать —
+предложи оставить заявку через кнопку
+«📝 Оставить заявку».
+"""
+                },
+                {
+                    "role": "user",
+                    "content": message.text
+                }
+            ],
+            max_completion_tokens=500
+        )
+
+        await message.answer(
+            response.choices[0].message.content
+        )
+
+    except Exception as e:
+
+        await message.answer(
+            f"Ошибка AI: {e}"
+        )
 
 async def main():
     await dp.start_polling(bot)
