@@ -13,7 +13,8 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     CallbackQuery,
-    FSInputFile
+    FSInputFile,
+    ReplyKeyboardRemove
 )
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
@@ -404,24 +405,10 @@ async def get_name(message: Message, state: FSMContext):
 
     await state.set_state(RequestForm.phone)
 
-    contact_keyboard = ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                KeyboardButton(
-                    text="📱 Отправить номер",
-                    request_contact=True
-                )
-            ]
-        ],
-        resize_keyboard=True,
-        one_time_keyboard=True
-    )
-
     await message.answer(
-    "📱 Отправьте номер кнопкой ниже.\n\n"
-    "Если вы используете Telegram на ПК, просто введите номер вручную.",
-    reply_markup=contact_keyboard
-)
+        "📱 Введите ваш номер телефона вручную:",
+        reply_markup=ReplyKeyboardRemove()
+    )
 
 
 @dp.message(RequestForm.phone)
