@@ -570,6 +570,19 @@ async def ai_chat(message: Message):
         )
 
 async def main():
+    # Запуск веб-сервера для Render (health check)
+    from aiohttp import web
+    async def handle_health(request):
+        return web.Response(text="OK")
+    
+    port = int(os.getenv("PORT", 8080))
+    app = web.Application()
+    app.router.add_get("/", handle_health)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+    
     await dp.start_polling(bot)
 
 
