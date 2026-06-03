@@ -65,7 +65,12 @@ class AIChat(StatesGroup):
 
 keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
-   
+        [
+            InlineKeyboardButton(
+                text="🤖 AI Консультант",
+                callback_data="ai_consultant"
+            )
+        ],
         [
             InlineKeyboardButton(
                 text="💼 Каталог решений",
@@ -88,12 +93,6 @@ keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 text="📝 Оставить заявку",
                 callback_data="request"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text="🤖 AI Консультант",
-                callback_data="ai_consultant"
             )
         ]
     ]
