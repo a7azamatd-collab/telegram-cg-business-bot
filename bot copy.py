@@ -13,6 +13,7 @@ from aiogram.types import (
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
+import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -28,8 +29,12 @@ scope = [
     "https://www.googleapis.com/auth/drive"
 ]
 
+credentials_path = "/etc/secrets/credentials.json"
+if not os.path.exists(credentials_path):
+    credentials_path = "credentials.json"
+
 creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "/etc/secrets/credentials.json",
+    credentials_path,
     scope
 )
 
