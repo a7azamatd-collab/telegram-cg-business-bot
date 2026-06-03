@@ -1,4 +1,6 @@
 import asyncio
+from dotenv import load_dotenv
+load_dotenv()
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import (
@@ -17,7 +19,7 @@ import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-TOKEN = "8813038337:AAFJFQmFxyjBX_W_gaetx-WVr7xRk6SnHv0"
+TOKEN = os.getenv("BOT_TOKEN")
 
 ADMIN_ID = 490936540
 

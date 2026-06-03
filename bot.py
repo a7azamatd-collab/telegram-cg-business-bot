@@ -1,4 +1,6 @@
 import asyncio
+from dotenv import load_dotenv
+load_dotenv()
 import os
 from openai import AsyncOpenAI
 from datetime import datetime
@@ -116,133 +118,76 @@ async def catalog(callback: CallbackQuery):
             [InlineKeyboardButton(text="⚙ Индивидуальная разработка", callback_data="custom_bot")]
         ]
     )
-
     await callback.message.answer(
-        "💼 Каталог решений\n\n"
-        "Выберите интересующий вариант:",
+        "🗂 Выберите интересующий вас тариф:",
         reply_markup=catalog_keyboard
     )
-
     await callback.answer()
-@dp.callback_query(F.data == "business_bot")
-async def business_bot(callback: CallbackQuery):
 
-    photo = FSInputFile("tarif/business.png")
-
-    order_keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_business")],
-            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
-        ]
-    )
-
-    await callback.message.answer_photo(
-    photo=photo,
-    caption=
-        "━━━━━━━━━━━━━━━\n"
-        "🔹 БИЗНЕС-БОТ\n\n"
-
-        "💰 Стоимость\n"
-        "от 150 000 ₸\n\n"
-
-        "🔄 Поддержка\n"
-        "70 000 ₸ / месяц\n\n"
-
-        "🎯 Подходит для\n"
-        "• Салонов красоты\n"
-        "• Автосервисов\n"
-        "• Мебельных компаний\n"
-        "• Доставки\n\n"
-
-        "📦 Что входит\n\n"
-
-        "✅ Каталог услуг\n"
-        "✅ Фото и карточки\n"
-        "✅ CRM клиентов\n"
-        "✅ Уведомления админу\n"
-        "✅ Рассылки\n"
-        "✅ Работа 24/7\n\n"
-
-        "⏳ Срок разработки\n"
-        "7–10 дней\n"
-        "━━━━━━━━━━━━━━━",
-
-        reply_markup=order_keyboard
-    )
-
-    await callback.answer()
-@dp.callback_query(F.data == "card_bot")
-async def card_bot(callback: CallbackQuery):
-
-    photo = FSInputFile("tarif/visitka.png")
-
-    order_keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_card")],
-            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
-        ]
-    )
-
-    await callback.message.answer_photo(
-    photo=photo,
-    caption=
+TARIF_DETAILS = {
+"card_bot": {
+    "photo": "tarif/visitka.png",
+    "caption": (
         "━━━━━━━━━━━━━━━\n"
         "🔹 БОТ-ВИЗИТКА\n\n"
-
         "💰 Стоимость\n"
         "от 70 000 ₸\n\n"
-
         "🔄 Поддержка\n"
         "40 000 ₸ / месяц\n\n"
-
         "🎯 Подходит для\n"
         "• Мастеров\n"
         "• Услуг\n"
         "• Небольших компаний\n\n"
-
         "📦 Что входит\n\n"
-
         "✅ Красивое меню\n"
         "✅ Контакты\n"
         "✅ FAQ\n"
         "✅ Сбор заявок\n"
         "✅ CRM Google Sheets\n"
         "✅ Работа 24/7\n\n"
-
         "⏳ Срок разработки\n"
         "3–7 дня\n"
-        "━━━━━━━━━━━━━━━",
-
-        reply_markup=order_keyboard
-    )
-
-    await callback.answer()
-@dp.callback_query(F.data == "shop_bot")
-async def shop_bot(callback: CallbackQuery):
-
-    photo = FSInputFile("tarif/shop.png")
-
-    order_keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_shop")],
-            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
-        ]
-    )
-
-    await callback.message.answer_photo(
-    photo=photo,
-    caption=
+        "━━━━━━━━━━━━━━━"
+    ),
+    "tariff_name": "Бот-визитка"
+},
+"business_bot": {
+    "photo": "tarif/business.png",
+    "caption": (
         "━━━━━━━━━━━━━━━\n"
-        "🛍 МАГАЗИН-БОТ\n\n"
-
+        "🔹 БИЗНЕС-БОТ\n\n"
         "💰 Стоимость\n"
         "от 150 000 ₸\n\n"
-
+        "🔄 Поддержка\n"
+        "70 000 ₸ / месяц\n\n"
+        "🎯 Подходит для\n"
+        "• Салонов красоты\n"
+        "• Автосервисов\n"
+        "• Мебельных компаний\n"
+        "• Доставки\n\n"
+        "📦 Что входит\n\n"
+        "✅ Каталог услуг\n"
+        "✅ Фото и карточки\n"
+        "✅ CRM клиентов\n"
+        "✅ Уведомления админу\n"
+        "✅ Рассылки\n"
+        "✅ Работа 24/7\n\n"
+        "⏳ Срок разработки\n"
+        "7–10 дней\n"
+        "━━━━━━━━━━━━━━━"
+    ),
+    "tariff_name": "Бизнес-бот"
+},
+"shop_bot": {
+    "photo": "tarif/shop.png",
+    "caption": (
+        "━━━━━━━━━━━━━━━\n"
+        "🛍 МАГАЗИН-БОТ\n\n"
+        "💰 Стоимость\n"
+        "от 150 000 ₸\n\n"
         "🔄 Поддержка\n"
         "90 000 ₸ / месяц\n\n"
-
         "📦 Что входит\n\n"
-
         "✅ Каталог товаров\n"
         "✅ Фото товаров\n"
         "✅ Категории\n"
@@ -251,107 +196,97 @@ async def shop_bot(callback: CallbackQuery):
         "✅ CRM клиентов\n"
         "✅ Админ-панель\n"
         "✅ Работа 24/7\n\n"
-
         "⏳ Срок разработки\n"
         "7–20 дней\n"
-        "━━━━━━━━━━━━━━━",
-
-        reply_markup=order_keyboard
-    )
-
-    await callback.answer()
-@dp.callback_query(F.data == "ai_bot")
-async def ai_bot(callback: CallbackQuery):
-
-    photo = FSInputFile("tarif/ai.png")
-
-    order_keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_ai")],
-            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
-        ]
-    )
-
-    await callback.message.answer_photo(
-    photo=photo,
-    caption=
+        "━━━━━━━━━━━━━━━"
+    ),
+    "tariff_name": "Магазин-бот"
+},
+"ai_bot": {
+    "photo": "tarif/ai.png",
+    "caption": (
         "━━━━━━━━━━━━━━━\n"
         "🤖 AI / CHATGPT БОТ\n\n"
-
         "💰 Стоимость\n"
         "от 300 000 ₸\n\n"
-
         "🔄 Поддержка\n"
         "150 000 ₸ / месяц\n\n"
-
         "📦 Что входит\n\n"
-
         "✅ AI-консультант\n"
         "✅ ChatGPT интеграция\n"
         "✅ Ответы клиентам 24/7\n"
         "✅ Автоматизация продаж\n"
         "✅ CRM интеграции\n"
         "✅ Индивидуальное обучение\n\n"
-
         "⏳ Срок разработки\n"
         "7–20 дней\n"
-        "━━━━━━━━━━━━━━━",
-
-        reply_markup=order_keyboard
-    )
-
-    await callback.answer()
-@dp.callback_query(F.data == "custom_bot")
-async def custom_bot(callback: CallbackQuery):
-
-    photo = FSInputFile("tarif/custom.png")
-
-    order_keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="🛒 Заказать", callback_data="order_custom")],
-            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
-        ]
-    )
-
-    await callback.message.answer_photo(
-    photo=photo,
-    caption=
+        "━━━━━━━━━━━━━━━"
+    ),
+    "tariff_name": "AI / ChatGPT бот"
+},
+"custom_bot": {
+    "photo": "tarif/custom.png",
+    "caption": (
         "━━━━━━━━━━━━━━━\n"
         "⚙ ИНДИВИДУАЛЬНАЯ РАЗРАБОТКА\n\n"
-
         "💰 Стоимость\n"
         "от 500 000 ₸\n\n"
-
         "📦 Возможности\n\n"
-
         "✅ Telegram Mini App\n"
         "✅ Онлайн-оплата\n"
         "✅ CRM интеграции\n"
         "✅ Автоматизация бизнеса\n"
         "✅ Складской учёт\n"
         "✅ Любой функционал\n\n"
-
         "⏳ Срок разработки\n"
         "Индивидуально\n"
-        "━━━━━━━━━━━━━━━",
+        "━━━━━━━━━━━━━━━"
+    ),
+    "tariff_name": "Индивидуальная разработка"
+}
+}
 
+
+@dp.callback_query(F.data.in_(TARIF_DETAILS.keys()))
+async def show_tarif(callback: CallbackQuery):
+    tarif_key = callback.data
+    tarif = TARIF_DETAILS[tarif_key]
+    photo = FSInputFile(tarif["photo"])
+
+    order_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="🛒 Заказать", callback_data=f"order_{tarif_key}")],
+            [InlineKeyboardButton(text="⬅ Назад", callback_data="catalog")]
+        ]
+    )
+
+    await callback.message.answer_photo(
+        photo=photo,
+        caption=tarif["caption"],
         reply_markup=order_keyboard
     )
-
     await callback.answer()
-@dp.callback_query(F.data == "order_business")
-async def order_business(callback: CallbackQuery, state: FSMContext):
 
-    await state.update_data(
-        tariff="Бизнес-бот"
-    )
 
+@dp.callback_query(F.data.startswith("order_"))
+async def order_tariff(callback: CallbackQuery, state: FSMContext):
+    tarif_key = callback.data.replace("order_", "")
+    
+    # Normalize old/short keys to match TARIF_DETAILS keys
+    if tarif_key not in TARIF_DETAILS and f"{tarif_key}_bot" in TARIF_DETAILS:
+        tarif_key = f"{tarif_key}_bot"
+        
+    if tarif_key in TARIF_DETAILS:
+        tariff_name = TARIF_DETAILS[tarif_key]["tariff_name"]
+    else:
+        tariff_name = "Не выбран"
+
+    await state.update_data(tariff=tariff_name)
     await state.set_state(RequestForm.name)
 
     await callback.message.answer(
         "👤 Введите ваше имя:"
     )
-
     await callback.answer()
 @dp.callback_query(F.data == "order_card")
 async def order_card(callback: CallbackQuery, state: FSMContext):
