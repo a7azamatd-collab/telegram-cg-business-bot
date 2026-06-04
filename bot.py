@@ -521,11 +521,7 @@ async def ai_chat(message: Message):
             "content": message.text
         })
 
-        messages = [
-            {
-                "role": "system",
-                "content": """
-Ты менеджер CG Smart Bots.
+        system_prompt = """Ты менеджер CG Smart Bots.
 
 Отвечай кратко и по делу.
 
@@ -540,19 +536,136 @@ async def ai_chat(message: Message):
 Не пиши длинные статьи.
 
 Когда клиент заинтересован, предложи оставить заявку.
+Если клиент оставляет свои контакты (имя и телефон) для заявки, обязательно вызови функцию create_lead, чтобы сохранить заявку в CRM.
 
-Всегда отвечай на русском языке.
-"""
+Всегда отвечай на русском языке."""
+
+        messages = [
+            {
+                "role": "system",
+                "content": system_prompt
             }
         ]
 
         messages.extend(user_history[user_id][-10:])
 
+        tools = [
+            {
+                "type": "function",
+                "function": {
+                    "name": "create_lead",
+                    "description": "Создать и зафиксировать заявку от клиента в CRM, когда клиент готов оставить свои контакты (имя и телефон) или передал их. Не вызывай эту функцию без реального имени и телефона.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "Имя клиента"
+                            },
+                            "phone": {
+                                "type": "string",
+                                "description": "Номер телефона клиента"
+                            },
+                            "comment": {
+                                "type": "string",
+                                "description": "Краткое описание потребностей клиента, о которых шла речь в диалоге (например, какой бот нужен, для какого бизнеса, сколько мастеров)"
+                            }
+                        },
+                        "required": ["name", "phone"]
+                    }
+                }
+            }
+        ]
+
         response = await client_ai.chat.completions.create(
-            model="gpt-5.5",
+            model="gpt-4o-mini",
             messages=messages,
+            tools=tools,
             max_completion_tokens=500
         )
+
+        tool_calls = response.choices[0].message.tool_calls
+        if tool_calls:
+            for tool_call in tool_calls:
+                if tool_call.function.name == "create_lead":
+                    import json
+                    try:
+                        args = json.loads(tool_call.function.arguments)
+                        name = args.get("name")
+                        phone = args.get("phone")
+                        comment = args.get("comment", "")
+
+                        current_time = datetime.now().strftime("%d.%m.%Y %H:%M")
+
+                        text = (
+                            f"📥 Новая заявка (через AI Консультанта)\n\n"
+                            f"🕒 Дата: {current_time}\n"
+                            f"👤 Имя: {name}\n"
+                            f"📱 Телефон: {phone}\n"
+                            f"💼 Тариф: AI Консультант\n"
+                            f"📝 Комментарий: {comment}"
+                        )
+
+                        await bot.send_message(ADMIN_ID, text)
+
+                        sheet.append_row([
+                            current_time,
+                            name,
+                            phone,
+                            "AI Консультант",
+                            comment
+                        ])
+
+                        tool_result_str = "Заявка успешно сохранена в CRM. Администратор уведомлен."
+                    except Exception as e_inner:
+                        print(f"Error executing tool: {e_inner}")
+                        tool_result_str = f"Ошибка при сохранении заявки: {e_inner}"
+
+                    assistant_msg = {
+                        "role": "assistant",
+                        "content": response.choices[0].message.content or "",
+                        "tool_calls": [
+                            {
+                                "id": tc.id,
+                                "type": "function",
+                                "function": {
+                                    "name": tc.function.name,
+                                    "arguments": tc.function.arguments
+                                }
+                            } for tc in tool_calls
+                        ]
+                    }
+                    user_history[user_id].append(assistant_msg)
+
+                    user_history[user_id].append({
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "name": "create_lead",
+                        "content": tool_result_str
+                    })
+
+                    second_messages = [
+                        {
+                            "role": "system",
+                            "content": system_prompt
+                        }
+                    ]
+                    second_messages.extend(user_history[user_id][-12:])
+
+                    response2 = await client_ai.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=second_messages,
+                        max_completion_tokens=500
+                    )
+
+                    answer_text = response2.choices[0].message.content
+                    user_history[user_id].append({
+                        "role": "assistant",
+                        "content": answer_text
+                    })
+
+                    await message.answer(answer_text)
+                    return
 
         answer_text = response.choices[0].message.content
 
