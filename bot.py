@@ -170,13 +170,30 @@ async def catalog(callback: CallbackQuery):
             [InlineKeyboardButton(text="🔹 Бизнес-бот", callback_data="business_bot")],
             [InlineKeyboardButton(text="🔹 Магазин-бот", callback_data="shop_bot")],
             [InlineKeyboardButton(text="🤖 AI / ChatGPT бот", callback_data="ai_bot")],
-            [InlineKeyboardButton(text="⚙ Индивидуальная разработка", callback_data="custom_bot")]
+            [InlineKeyboardButton(text="⚙ Индивидуальная разработка", callback_data="custom_bot")],
+            [InlineKeyboardButton(text="⬅ Назад", callback_data="back_to_main")]
         ]
     )
     await callback.message.answer(
         "🗂 Выберите интересующий вас тариф:",
         reply_markup=catalog_keyboard
     )
+    await callback.answer()
+
+@dp.callback_query(F.data == "back_to_main")
+async def back_to_main(callback: CallbackQuery):
+    try:
+        await callback.message.edit_text(
+            "👋 Добро пожаловать!\n\n"
+            "Выберите нужный раздел:",
+            reply_markup=keyboard
+        )
+    except Exception:
+        await callback.message.answer(
+            "👋 Добро пожаловать!\n\n"
+            "Выберите нужный раздел:",
+            reply_markup=keyboard
+        )
     await callback.answer()
 
 TARIF_DETAILS = {
