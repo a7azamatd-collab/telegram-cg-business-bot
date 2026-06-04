@@ -67,7 +67,7 @@ keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text="🤖 AI Консультант",
+                text="🤖 Smart консультант",
                 callback_data="ai_consultant"
             )
         ],
@@ -498,7 +498,7 @@ async def ai_consultant(callback: CallbackQuery, state: FSMContext):
     await state.set_state(AIChat.chat)
 
     await callback.message.answer(
-        "🤖 AI Консультант\n\n"
+        "🤖 Smart консультант\n\n"
         "Здравствуйте!\n\n"
         "Я помогу подобрать Telegram-бота для вашего бизнеса.\n\n"
         "Опишите задачу."
@@ -598,11 +598,11 @@ async def ai_chat(message: Message):
                         current_time = datetime.now().strftime("%d.%m.%Y %H:%M")
 
                         text = (
-                            f"📥 Новая заявка (через AI Консультанта)\n\n"
+                            f"📥 Новая заявка (через Smart консультанта)\n\n"
                             f"🕒 Дата: {current_time}\n"
                             f"👤 Имя: {name}\n"
                             f"📱 Телефон: {phone}\n"
-                            f"💼 Тариф: AI Консультант\n"
+                            f"💼 Тариф: Smart консультант\n"
                             f"📝 Комментарий: {comment}"
                         )
 
@@ -612,7 +612,7 @@ async def ai_chat(message: Message):
                             current_time,
                             name,
                             phone,
-                            "AI Консультант",
+                            "Smart консультант",
                             comment
                         ])
 
