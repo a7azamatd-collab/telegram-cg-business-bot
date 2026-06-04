@@ -2,6 +2,7 @@ import asyncio
 from dotenv import load_dotenv
 load_dotenv()
 import os
+import json
 from openai import AsyncOpenAI
 from datetime import datetime
 from aiogram import Bot, Dispatcher, F
@@ -30,7 +31,54 @@ client_ai = AsyncOpenAI(
     api_key=OPENAI_API_KEY
 )
 
-user_history = {}
+HISTORY_FILE = "history.json"
+
+def load_history():
+    if os.path.exists(HISTORY_FILE):
+        try:
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return {int(k): v for k, v in data.items()}
+        except Exception as e:
+            print(f"Error loading history: {e}")
+    return {}
+
+def save_history_sync(history):
+    try:
+        serializable_history = {}
+        for user_id, messages in history.items():
+            clean_messages = []
+            for msg in messages:
+                if isinstance(msg, dict):
+                    clean_messages.append(msg)
+                else:
+                    msg_dict = {"role": msg.role, "content": msg.content or ""}
+                    if hasattr(msg, "tool_calls") and msg.tool_calls:
+                        msg_dict["tool_calls"] = [
+                            {
+                                "id": tc.id,
+                                "type": "function",
+                                "function": {
+                                    "name": tc.function.name,
+                                    "arguments": tc.function.arguments
+                                }
+                            } for tc in msg.tool_calls
+                        ]
+                    elif hasattr(msg, "name") and msg.name:
+                        msg_dict["name"] = msg.name
+                    if hasattr(msg, "tool_call_id") and msg.tool_call_id:
+                        msg_dict["tool_call_id"] = msg.tool_call_id
+                    clean_messages.append(msg_dict)
+            serializable_history[str(user_id)] = clean_messages
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(serializable_history, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Error saving history: {e}")
+
+async def save_history(history):
+    await asyncio.to_thread(save_history_sync, history)
+
+user_history = load_history()
 
 ADMIN_ID = 490936540
 
@@ -96,6 +144,13 @@ keyboard = InlineKeyboardMarkup(
             )
         ]
     ]
+)
+
+keyboard_exit = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="⬅ Назад в меню")]
+    ],
+    resize_keyboard=True
 )
 
 
@@ -446,13 +501,16 @@ async def get_comment(message: Message, state: FSMContext):
 
     await bot.send_message(ADMIN_ID, text)
 
-    sheet.append_row([
-    current_time,
-    data['name'],
-    data['phone'],
-    data.get('tariff', 'Не выбран'),
-    data['comment']
-])
+    await asyncio.to_thread(
+        sheet.append_row,
+        [
+            current_time,
+            data['name'],
+            data['phone'],
+            data.get('tariff', 'Не выбран'),
+            data['comment']
+        ]
+    )
 
     await message.answer(
     "✅ Заявка отправлена!\n\n"
@@ -468,7 +526,7 @@ async def leads(message: Message):
     if message.from_user.id != ADMIN_ID:
         return
 
-    records = sheet.get_all_values()
+    records = await asyncio.to_thread(sheet.get_all_values)
 
     if len(records) <= 1:
         await message.answer("Заявок пока нет.")
@@ -501,10 +559,23 @@ async def ai_consultant(callback: CallbackQuery, state: FSMContext):
         "🤖 Smart консультант\n\n"
         "Здравствуйте!\n\n"
         "Я помогу подобрать Telegram-бота для вашего бизнеса.\n\n"
-        "Опишите задачу."
+        "Опишите задачу.",
+        reply_markup=keyboard_exit
     )
 
     await callback.answer()
+
+@dp.message(AIChat.chat, F.text.in_({"⬅ Назад в меню", "Назад"}))
+async def exit_ai_chat(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer(
+        "Вы вернулись в главное меню.",
+        reply_markup=ReplyKeyboardRemove()
+    )
+    await message.answer(
+        "Выберите нужный раздел:",
+        reply_markup=keyboard
+    )
 
 @dp.message(AIChat.chat)
 async def ai_chat(message: Message):
@@ -520,12 +591,11 @@ async def ai_chat(message: Message):
             "role": "user",
             "content": message.text
         })
+        await save_history(user_history)
 
         system_prompt = """Ты менеджер CG Smart Bots.
 
-Отвечай кратко и по делу.
-
-Не более 5-8 предложений за ответ.
+Отвечай кратко и по делу. Не более 5-8 предложений за ответ. Не пиши длинные статьи. Всегда отвечай на русском языке.
 
 Твоя цель:
 - выявить потребность клиента;
@@ -533,12 +603,36 @@ async def ai_chat(message: Message):
 - задать следующий вопрос;
 - подвести клиента к заявке.
 
-Не пиши длинные статьи.
-
 Когда клиент заинтересован, предложи оставить заявку.
 Если клиент оставляет свои контакты (имя и телефон) для заявки, обязательно вызови функцию create_lead, чтобы сохранить заявку в CRM.
 
-Всегда отвечай на русском языке."""
+Информация о наших тарифах для консультации:
+1. Бот-визитка:
+   - Стоимость: от 70 000 ₸
+   - Поддержка: 40 000 ₸ / месяц
+   - Срок разработки: 3–7 дней
+   - Что входит: красивое меню, контакты, FAQ, сбор заявок, CRM Google Sheets, работа 24/7.
+2. Бизнес-бот:
+   - Стоимость: от 150 000 ₸
+   - Поддержка: 70 000 ₸ / месяц
+   - Срок разработки: 7–10 дней
+   - Что входит: каталог услуг с фото и карточками, CRM клиентов, уведомления админу, рассылки, работа 24/7.
+3. Магазин-бот:
+   - Стоимость: от 150 000 ₸
+   - Поддержка: 90 000 ₸ / месяц
+   - Срок разработки: 7–20 дней
+   - Что входит: каталог товаров с категориями, корзина, заказы, CRM клиентов, админ-панель, работа 24/7.
+4. AI / ChatGPT бот:
+   - Стоимость: от 300 000 ₸
+   - Поддержка: 150 000 ₸ / месяц
+   - Срок разработки: 7–20 дней
+   - Что входит: AI-консультант, ChatGPT интеграция, ответы клиентам 24/7, автоматизация продаж, CRM интеграции, индивидуальное обучение.
+5. Индивидуальная разработка:
+   - Стоимость: от 500 000 ₸
+   - Срок разработки: индивидуально
+   - Что входит: Telegram Mini App, онлайн-оплата, CRM интеграции, автоматизация бизнеса, складской учёт, любой функционал.
+
+Используй эту информацию при подборе решений для клиентов."""
 
         messages = [
             {
@@ -608,13 +702,16 @@ async def ai_chat(message: Message):
 
                         await bot.send_message(ADMIN_ID, text)
 
-                        sheet.append_row([
-                            current_time,
-                            name,
-                            phone,
-                            "Smart консультант",
-                            comment
-                        ])
+                        await asyncio.to_thread(
+                            sheet.append_row,
+                            [
+                                current_time,
+                                name,
+                                phone,
+                                "Smart консультант",
+                                comment
+                            ]
+                        )
 
                         tool_result_str = "Заявка успешно сохранена в CRM. Администратор уведомлен."
                     except Exception as e_inner:
@@ -643,6 +740,7 @@ async def ai_chat(message: Message):
                         "name": "create_lead",
                         "content": tool_result_str
                     })
+                    await save_history(user_history)
 
                     second_messages = [
                         {
@@ -663,6 +761,7 @@ async def ai_chat(message: Message):
                         "role": "assistant",
                         "content": answer_text
                     })
+                    await save_history(user_history)
 
                     await message.answer(answer_text)
                     return
@@ -673,6 +772,7 @@ async def ai_chat(message: Message):
             "role": "assistant",
             "content": answer_text
         })
+        await save_history(user_history)
 
         await message.answer(answer_text)
 
